@@ -1,0 +1,24 @@
+﻿  RayTracing.cpp
+e:\demo\raytracing\raytracing\vector.h(54): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+RayTracing.cpp(14): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+RayTracing.cpp(18): warning C4244: “return”: 从“double”转换到“float”，可能丢失数据
+RayTracing.cpp(24): warning C4305: “参数”: 从“double”到“float”截断
+RayTracing.cpp(42): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+RayTracing.cpp(43): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+RayTracing.cpp(43): warning C4305: “参数”: 从“double”到“float”截断
+RayTracing.cpp(56): warning C4305: “参数”: 从“double”到“float”截断
+RayTracing.cpp(57): warning C4305: “参数”: 从“double”到“float”截断
+RayTracing.cpp(58): warning C4305: “参数”: 从“double”到“float”截断
+RayTracing.cpp(59): warning C4305: “参数”: 从“double”到“float”截断
+  hittable.cpp
+e:\demo\raytracing\raytracing\vector.h(54): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+hittable.cpp(45): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+  material.cpp
+e:\demo\raytracing\raytracing\vector.h(54): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+  正在生成代码
+  15 of 294 functions ( 5.1%) were compiled, the rest were copied from previous compilation.
+    9 functions were new in current compilation
+    10 functions had inline decision re-evaluated but remain unchanged
+  已完成代码的生成
+  RayTracing.vcxproj -> E:\demo\RayTracing\Release\RayTracing.exe
+  RayTracing.vcxproj -> E:\demo\RayTracing\Release\RayTracing.pdb (Full PDB)

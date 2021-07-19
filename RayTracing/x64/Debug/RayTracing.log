@@ -1,0 +1,39 @@
+﻿  camera.cpp
+e:\demo\raytracing\raytracing\vector.h(53): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+  material.cpp
+e:\demo\raytracing\raytracing\vector.h(53): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\material.h(11): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+e:\demo\raytracing\raytracing\material.h(11): error C2143: 语法错误: 缺少“,”(在“&”的前面)
+e:\demo\raytracing\raytracing\material.h(17): error C2061: 语法错误: 标识符“hit_record”
+e:\demo\raytracing\raytracing\material.cpp(57): error C2660: “Hittable::hit”: 函数不接受 4 个参数
+  e:\demo\raytracing\raytracing\material.h(17): note: 参见“Hittable::hit”的声明
+  RayTracing.cpp
+e:\demo\raytracing\raytracing\vector.h(53): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\material.h(11): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+e:\demo\raytracing\raytracing\material.h(11): error C2143: 语法错误: 缺少“,”(在“&”的前面)
+e:\demo\raytracing\raytracing\material.h(17): error C2061: 语法错误: 标识符“hit_record”
+e:\demo\raytracing\raytracing\material.cpp(57): error C2660: “Hittable::hit”: 函数不接受 4 个参数
+  e:\demo\raytracing\raytracing\material.h(17): note: 参见“Hittable::hit”的声明
+e:\demo\raytracing\raytracing\raytracing.cpp(14): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\raytracing.cpp(18): warning C4244: “return”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\raytracing.cpp(24): error C2660: “Hittable::hit”: 函数不接受 4 个参数
+  e:\demo\raytracing\raytracing\material.h(17): note: 参见“Hittable::hit”的声明
+e:\demo\raytracing\raytracing\raytracing.cpp(32): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\raytracing.cpp(33): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\raytracing.cpp(33): warning C4305: “参数”: 从“double”到“float”截断
+e:\demo\raytracing\raytracing\raytracing.cpp(46): error C2259: “Sphere”: 不能实例化抽象类
+  e:\demo\raytracing\raytracing\raytracing.cpp(46): note: 由于下列成员:
+  e:\demo\raytracing\raytracing\raytracing.cpp(46): note: “bool Hittable::hit(const Ray &,float,float) const”: 是抽象的
+  e:\demo\raytracing\raytracing\material.h(17): note: 参见“Hittable::hit”的声明
+e:\demo\raytracing\raytracing\raytracing.cpp(47): error C2259: “Sphere”: 不能实例化抽象类
+  e:\demo\raytracing\raytracing\raytracing.cpp(47): note: 由于下列成员:
+  e:\demo\raytracing\raytracing\raytracing.cpp(47): note: “bool Hittable::hit(const Ray &,float,float) const”: 是抽象的
+  e:\demo\raytracing\raytracing\material.h(17): note: 参见“Hittable::hit”的声明
+e:\demo\raytracing\raytracing\raytracing.cpp(48): error C2259: “HittableList”: 不能实例化抽象类
+  e:\demo\raytracing\raytracing\raytracing.cpp(48): note: 由于下列成员:
+  e:\demo\raytracing\raytracing\raytracing.cpp(48): note: “bool Hittable::hit(const Ray &,float,float) const”: 是抽象的
+  e:\demo\raytracing\raytracing\material.h(17): note: 参见“Hittable::hit”的声明
+  tool.cpp
+e:\demo\raytracing\raytracing\vector.h(53): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\tool.cpp(17): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+  正在生成代码...
