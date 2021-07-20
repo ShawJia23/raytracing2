@@ -50,3 +50,38 @@ bool HittableList::hit(const Ray& r, float t_min, float t_max, hit_record& rec) 
 	}
 	return hit_anything;
 }
+
+Vector3 MoveSphere::center(float time) const 
+{
+	return center0_ + ((time - time0_) / (time1_ - time0_))*(center1_ - center0_);
+}
+
+bool MoveSphere::hit(const Ray& r, float t_min, float t_max, hit_record& rec) const 
+{
+	Vector3 oc = r.origin() - center(r.time());
+	float a = dot(r.direction(), r.direction());
+	float b = dot(oc, r.direction());
+	float c = dot(oc, oc) - radius_ * radius_;
+	float discriminant = b * b - a * c;
+
+	if (discriminant > 0)
+	{
+		float temp = (-b - sqrt(discriminant)) / a;
+		if (temp < t_max && temp > t_min) {
+			rec.t = temp;
+			rec.p = r.point_at_parameter(rec.t);
+			rec.normal = (rec.p - center(r.time())) / radius_;
+			rec.mat = mat_ptr_;
+			return true;
+		}
+		temp = (-b + sqrt(discriminant)) / a;
+		if (temp < t_max && temp > t_min) {
+			rec.t = temp;
+			rec.p = r.point_at_parameter(rec.t);
+			rec.normal = (rec.p - center(r.time())) / radius_;
+			rec.mat = mat_ptr_;
+			return true;
+		}
+	}
+	return false;
+}

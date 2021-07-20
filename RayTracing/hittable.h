@@ -43,4 +43,18 @@ public:
 	Material *mat_ptr_;
 };
 
+class MoveSphere :public Hittable 
+{
+public:
+	MoveSphere() {}
+	MoveSphere(Vector3 center0, Vector3 center1, float time0, float time1, float r, Material *m) :
+		center0_(center0), center1_(center1), time0_(time0), time1_(time1), radius_(r), mat_ptr_(m) {};
+	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const;
+	Vector3 center(float time) const;
+	Vector3 center0_, center1_;
+	float time0_, time1_;
+	float radius_;
+	Material *mat_ptr_;
+};
+
 #endif 

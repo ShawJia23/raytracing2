@@ -32,7 +32,7 @@ float schlick(float cosine, float ref_idx)
 bool Lambertian::scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered) const 
 {
 	Vector3 target = rec.p + rec.normal + random_in_unit_sphere();
-	scattered = Ray(rec.p, target - rec.p);
+	scattered = Ray(rec.p, target - rec.p,r_in.time());
 	attenuation = albedo_;
 	return true;
 }
@@ -46,7 +46,7 @@ Metal::Metal(const Vector3& a, float f) :albedo_(a)
 bool Metal::scatter(const Ray& r_in, const hit_record& rec, Vector3& attenuation, Ray& scattered) const 
 {
 	Vector3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
-	scattered = Ray(rec.p, reflected+fuzz_*random_in_unit_sphere());
+	scattered = Ray(rec.p, reflected+fuzz_*random_in_unit_sphere(),0);
 	attenuation = albedo_;
 	return (dot(scattered.direction(), rec.normal) > 0);
 }
@@ -83,10 +83,10 @@ bool Dielectric::scatter(const Ray& r_in, const hit_record& rec, Vector3& attenu
 	}
 
 	if (random_double() < reflect_prob) {
-		scattered = Ray(rec.p, reflected);
+		scattered = Ray(rec.p, reflected,0);
 	}
 	else {
-		scattered = Ray(rec.p, refracted);
+		scattered = Ray(rec.p, refracted,0);
 	}
 
 	return true;

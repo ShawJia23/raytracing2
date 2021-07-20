@@ -70,6 +70,7 @@ Hittable *test_scene()
 	}
 	return new HittableList(list, 26);
 }
+
 Hittable *random_scene() 
 {
 	int n = 500;
@@ -82,7 +83,8 @@ Hittable *random_scene()
 			Vector3 center(a + 0.9*random_double(), 0.2, b + 0.9*random_double());
 			if ((center - Vector3(4, 0.2, 0)).length() > 0.9) {
 				if (choose_mat < 0.8) {  // diffuse
-					list[i++] = new Sphere(center, 0.2,
+					list[i++] = new MoveSphere(center, center+Vector3(0,0.5*random_double(),0),
+						0.0,1.0,0.2,
 						new Lambertian(Vector3(random_double()*random_double(),
 							random_double()*random_double(),
 							random_double()*random_double())
@@ -108,20 +110,25 @@ Hittable *random_scene()
 
 	return new HittableList(list, i);
 }
+
 int main() 
 {
 	int nx = 2000;
 	int ny = 1000;
-	int ns = 1000;
+	int ns = 100;
 	std::ofstream outfile("MyTest.txt", std::ios::out);
 	outfile << "P3\n" << nx << " " << ny << "\n255\n";
-	Vector3 lookfrom(3,3,5);
-	Vector3 lookat(0, 0,-1);
-	float dist_to_focus= (lookfrom - lookat).length();
-	float aperture = 2.0;
-	Camera cam(lookfrom,lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny),aperture,dist_to_focus);
+	//Vector3 lookfrom(3,3,5);
+	//Vector3 lookat(0, 0,-1);
+	//float dist_to_focus = (lookfrom - lookat).length();
+	//float aperture = 2.0;
+	Vector3 lookfrom(13, 2, 3);
+	Vector3 lookat(0, 0, 0);
+	float dist_to_focus=10;
+	float aperture = 0;
+	Camera cam(lookfrom,lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny),aperture,dist_to_focus,0,1);
 
-	Hittable *world = test_scene();
+	Hittable *world = random_scene();
 	for (int j = ny - 1; j >= 0; j--) {
 		for (int i = 0; i < nx; i++) {
 			Vector3 color(0, 0, 0);
