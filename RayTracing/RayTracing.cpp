@@ -108,13 +108,13 @@ Hittable *random_scene()
 	list[i++] = new Sphere(Vector3(-3, 1, 0), 1.0, new Lambertian(Vector3(0.4, 0.2, 0.1)));
 	list[i++] = new Sphere(Vector3(4, 1, 0), 1.0, new Metal(Vector3(0.7, 0.6, 0.5), 0.0));
 
-	return new HittableList(list, i);
+	return new BvhNode(list, i,0,0);
 }
 
 int main() 
 {
-	int nx = 2000;
-	int ny = 1000;
+	int nx = 200;
+	int ny = 100;
 	int ns = 100;
 	std::ofstream outfile("MyTest.txt", std::ios::out);
 	outfile << "P3\n" << nx << " " << ny << "\n255\n";

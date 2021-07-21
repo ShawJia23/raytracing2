@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="aabb.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="hittable.cpp" />
     <ClCompile Include="material.cpp" />
@@ -160,6 +161,7 @@
     <ClCompile Include="tool.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="aabb.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="hittable.h" />
     <ClInclude Include="material.h" />

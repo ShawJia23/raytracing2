@@ -30,6 +30,9 @@
     <ClCompile Include="hittable.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="aabb.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.h">
@@ -48,6 +51,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="hittable.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="aabb.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
