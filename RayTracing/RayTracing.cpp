@@ -124,6 +124,14 @@ Hittable *two_sphere()
 	return new BvhNode(list, 2,0,0);
 }
 
+Hittable *two_perlin_spheres() {
+	Texture *pertext = new NoiseTexture();
+	Hittable **list = new Hittable*[2];
+	list[0] = new Sphere(Vector3(0, -1000, 0), 1000, new Lambertian(pertext));
+	list[1] = new Sphere(Vector3(0, 2, 0), 2, new Lambertian(pertext));
+	return new HittableList(list, 2);
+}
+
 int main() 
 {
 	int nx = 200;
@@ -141,7 +149,7 @@ int main()
 	float aperture = 0;
 	Camera cam(lookfrom,lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny),aperture,dist_to_focus,0,1);
 
-	Hittable *world = two_sphere();
+	Hittable *world = two_perlin_spheres();
 	for (int j = ny - 1; j >= 0; j--) {
 		for (int i = 0; i < nx; i++) {
 			Vector3 color(0, 0, 0);

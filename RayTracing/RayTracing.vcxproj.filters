@@ -36,6 +36,9 @@
     <ClCompile Include="texture.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="perlin.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.h">
@@ -60,6 +63,9 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="texture.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="perlin.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
