@@ -7,6 +7,12 @@
 #include"camera.h"
 #include"material.h"
 
+int nx = 2000;
+int ny = 1000;
+int ns = 1000;
+
+Camera *cam;
+Hittable *world;
 
 float hit_sphere(const Vector3& center, float radius, const Ray& r) {
 	Vector3 oc = r.origin() - center;
@@ -44,34 +50,48 @@ Vector3 shading_color(const Ray& r,Hittable *world,int depth)
 	}
 }
 
-//Hittable *test_scene() 
-//{
-//	Hittable **list=new Hittable*[26];
-//	int n = 1;
-//	list[0] = new Sphere(Vector3(0, -100.5, -1), 100, new Lambertian(Vector3(0.8, 0.8, 0.0)));
-//	for (int i = -2; i < 3; i++) 
-//	{
-//		for (int j = -2; j < 3; j++) 
-//		{
-//			if (random_double() < 0.33) 
-//			{
-//				list[n] = new Sphere(Vector3(i, 0, j), 0.5, new Lambertian(Vector3(random_double(), random_double(), random_double())));
-//			}
-//			else if (random_double() > 0.66) 
-//			{
-//				list[n] = new Sphere(Vector3(i, 0, j), 0.5, new Metal(Vector3(0.8, 0.6, 0.2),0.3));
-//			}
-//			else 
-//			{
-//				list[n] = new Sphere(Vector3(i, 0, j), 0.5, new Dielectric(1.5));
-//			}
-//			n++;
-//		}
-//	}
-//	return new BvhNode(list, 26);
-//}
-//
-//Hittable *random_scene() 
+void test_scene(Hittable ** world, Camera** cam)
+{
+	Texture *checker = new CheckerTexture(
+		new ConstantTexture(Vector3(0.2, 0.3, 0.1)),
+		new ConstantTexture(Vector3(0.9, 0.9, 0.9))
+	);
+	Texture *back = new ConstantTexture(Vector3(.8, 0.8, 0));
+	Texture *blue_daoqi = new ConstantTexture(Vector3(0.11, 0.56, 1));
+	Hittable **list=new Hittable*[26];
+	int n = 1;
+	list[0] = new Sphere(Vector3(0, -100.5, -1), 100, new Lambertian(back));
+	for (int i = -2; i < 3; i++) 
+	{
+		for (int j = -2; j < 3; j++) 
+		{
+			if (random_double() < 0.33) 
+			{
+				Texture *ran_tex = new ConstantTexture(Vector3(random_double(), random_double(), random_double()));
+				list[n] = new Sphere(Vector3(i, 0, j), 0.5, new Lambertian(ran_tex));
+			}
+			else if (random_double() > 0.66) 
+			{
+				list[n] = new Sphere(Vector3(i, 0, j), 0.5, new Metal(Vector3(0.8, 0.6, 0.2),0.3));
+			}
+			else 
+			{
+				list[n] = new Sphere(Vector3(i, 0, j), 0.5, new Dielectric(1.5));
+			}
+			n++;
+		}
+	}
+	list[n] = new Sphere(Vector3(-3, 0, 0), 0.5, new Lambertian(blue_daoqi));
+	Vector3 lookfrom(5, 5, 7);
+	Vector3 lookat(0, 0, -1);
+	float dist_to_focus = (lookfrom - lookat).length();
+	float aperture = 2.0;
+
+	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny), aperture, dist_to_focus, 0, 1);
+	*world = new BvhNode(list, 27,0,0);
+}
+
+//void *random_scene(Hittable ** world, Camera** cam)
 //{
 //	int n = 500;
 //	Hittable **list = new Hittable*[n + 1];
@@ -108,55 +128,64 @@ Vector3 shading_color(const Ray& r,Hittable *world,int depth)
 //	list[i++] = new Sphere(Vector3(-3, 1, 0), 1.0, new Lambertian(Vector3(0.4, 0.2, 0.1)));
 //	list[i++] = new Sphere(Vector3(4, 1, 0), 1.0, new Metal(Vector3(0.7, 0.6, 0.5), 0.0));
 //
-//	return new BvhNode(list, i,0,0);
+//	Vector3 lookfrom(13, 2, 3);
+//	Vector3 lookat(0, 0, 0);
+//	float dist_to_focus = 10;
+//	float aperture = 0;
+//
+//	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny), aperture, dist_to_focus, 0, 1);
+//	*world = new BvhNode(list, i, 0, 0);
 //}
 
-Hittable *two_sphere() 
+void two_sphere(Hittable ** world, Camera** cam)
 {
 	Texture *checker = new CheckerTexture(
 		new ConstantTexture(Vector3(0.2, 0.3, 0.1)),
 		new ConstantTexture(Vector3(0.9, 0.9, 0.9))
 	);
-	int n = 50;
-	Hittable **list = new Hittable*[n + 1];
+	Hittable **list = new Hittable*[2];
 	list[0] = new Sphere(Vector3(0, -10, 0), 10, new Lambertian(checker));
 	list[1] = new Sphere(Vector3(0, 10, 0), 10, new Lambertian(checker));
-	return new BvhNode(list, 2,0,0);
+
+	Vector3 lookfrom(13, 2, 3);
+	Vector3 lookat(0, 0, 0);
+	float dist_to_focus = 10;
+	float aperture = 0;
+
+	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny), aperture, dist_to_focus, 0, 1);
+	*world = new BvhNode(list, 2,0,0);
 }
 
-Hittable *two_perlin_spheres() {
+void two_perlin_spheres(Hittable ** world,Camera** cam) {
 	Texture *pertext = new NoiseTexture();
 	Hittable **list = new Hittable*[2];
 	list[0] = new Sphere(Vector3(0, -1000, 0), 1000, new Lambertian(pertext));
 	list[1] = new Sphere(Vector3(0, 2, 0), 2, new Lambertian(pertext));
-	return new HittableList(list, 2);
+
+	Vector3 lookfrom(13, 2, 3);
+	Vector3 lookat(0, 0, 0);
+	float dist_to_focus = 10;
+	float aperture = 0;
+
+	*cam=new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny), aperture, dist_to_focus, 0, 1);
+	*world = new HittableList(list, 2);
 }
 
 int main() 
 {
-	int nx = 200;
-	int ny = 100;
-	int ns = 100;
+
 	std::ofstream outfile("MyTest.txt", std::ios::out);
 	outfile << "P3\n" << nx << " " << ny << "\n255\n";
-	//Vector3 lookfrom(3,3,5);
-	//Vector3 lookat(0, 0,-1);
-	//float dist_to_focus = (lookfrom - lookat).length();
-	//float aperture = 2.0;
-	Vector3 lookfrom(13, 2, 3);
-	Vector3 lookat(0, 0, 0);
-	float dist_to_focus=10;
-	float aperture = 0;
-	Camera cam(lookfrom,lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny),aperture,dist_to_focus,0,1);
-
-	Hittable *world = two_perlin_spheres();
+	
+	
+	test_scene(&world,&cam);
 	for (int j = ny - 1; j >= 0; j--) {
 		for (int i = 0; i < nx; i++) {
 			Vector3 color(0, 0, 0);
 			for (int s = 0; s < ns; s++) {
 				float u = float(i + random_double()) / float(nx);
 				float v = float(j + random_double()) / float(ny);
-				Ray r = cam.get_ray(u, v);
+				Ray r = cam->get_ray(u, v);
 				color += shading_color(r, world,0);
 			}
 			color /= float(ns);
