@@ -169,6 +169,7 @@
     <ClInclude Include="material.h" />
     <ClInclude Include="perlin.h" />
     <ClInclude Include="ray.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="tool.h" />
     <ClInclude Include="vector.h" />

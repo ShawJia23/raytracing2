@@ -10,8 +10,8 @@ class Material;
 
 struct hit_record
 {
-	float t;
-	Vector3 p;
+	float t;//参数t
+	Vector3 p;//相交点
 	Vector3 normal;
 	Material *mat;
 };

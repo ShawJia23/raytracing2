@@ -7,9 +7,12 @@
 #include"camera.h"
 #include"material.h"
 
-int nx = 2000;
-int ny = 1000;
-int ns = 1000;
+#define STB_IMAGE_IMPLEMENTATION
+#include"stb_image.h"
+
+int worldx = 200;
+int worldy = 100;
+int simple = 10;
 
 Camera *cam;
 Hittable *world;
@@ -87,7 +90,7 @@ void test_scene(Hittable ** world, Camera** cam)
 	float dist_to_focus = (lookfrom - lookat).length();
 	float aperture = 2.0;
 
-	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny), aperture, dist_to_focus, 0, 1);
+	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(worldx) / float(worldy), aperture, dist_to_focus, 0, 1);
 	*world = new BvhNode(list, 27,0,0);
 }
 
@@ -152,7 +155,7 @@ void two_sphere(Hittable ** world, Camera** cam)
 	float dist_to_focus = 10;
 	float aperture = 0;
 
-	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny), aperture, dist_to_focus, 0, 1);
+	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(worldx) / float(worldy), aperture, dist_to_focus, 0, 1);
 	*world = new BvhNode(list, 2,0,0);
 }
 
@@ -167,28 +170,46 @@ void two_perlin_spheres(Hittable ** world,Camera** cam) {
 	float dist_to_focus = 10;
 	float aperture = 0;
 
-	*cam=new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(nx) / float(ny), aperture, dist_to_focus, 0, 1);
+	*cam=new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(worldx) / float(worldy), aperture, dist_to_focus, 0, 1);
 	*world = new HittableList(list, 2);
+}
+
+void image_scene(Hittable ** world, Camera** cam)
+{
+	int nx, ny, nn;
+	unsigned char* texture_data = stbi_load("src/earthmap.jpg", &nx, &ny, &nn,0);
+	Material *mat = new Lambertian(new ImageTexture(texture_data, nx, ny));
+	//stbi_image_free(texture_data);
+	Hittable **list = new Hittable*[1];
+	list[0] = new Sphere(Vector3(0, 1, 0), 2.0,mat);
+	
+	Vector3 lookfrom(13, 2, 3);
+	Vector3 lookat(0, 0, 0);
+	float dist_to_focus = 10;
+	float aperture = 0;
+
+	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(worldx) / float(worldy), aperture, dist_to_focus, 0, 1);
+	*world = new HittableList(list, 1);
 }
 
 int main() 
 {
 
 	std::ofstream outfile("MyTest.txt", std::ios::out);
-	outfile << "P3\n" << nx << " " << ny << "\n255\n";
+	outfile << "P3\n" << worldx << " " << worldy << "\n255\n";
 	
 	
-	test_scene(&world,&cam);
-	for (int j = ny - 1; j >= 0; j--) {
-		for (int i = 0; i < nx; i++) {
+	image_scene(&world,&cam);
+	for (int j = worldy - 1; j >= 0; j--) {
+		for (int i = 0; i < worldx; i++) {
 			Vector3 color(0, 0, 0);
-			for (int s = 0; s < ns; s++) {
-				float u = float(i + random_double()) / float(nx);
-				float v = float(j + random_double()) / float(ny);
+			for (int s = 0; s < simple; s++) {
+				float u = float(i + random_double()) / float(worldx);
+				float v = float(j + random_double()) / float(worldy);
 				Ray r = cam->get_ray(u, v);
 				color += shading_color(r, world,0);
 			}
-			color /= float(ns);
+			color /= float(simple);
 			color = Vector3(sqrt(color[0]), sqrt(color[1]), sqrt(color[2]));
 			int ir = int(255.99*color[0]);
 			int ig = int(255.99*color[1]);

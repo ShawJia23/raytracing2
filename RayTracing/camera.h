@@ -2,8 +2,8 @@
 #ifndef CAMERAH
 #define CAMERAH
 #include"ray.h"
+#include "tool.h"
 
-#define M_PI 3.14159265358
 class Camera 
 {
 public:

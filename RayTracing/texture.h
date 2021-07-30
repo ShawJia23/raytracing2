@@ -3,6 +3,8 @@
 #define TEXTUREH
 #include "vector.h"
 #include "perlin.h"
+#include <math.h>
+#include"tool.h"
 
 class Texture 
 {
@@ -37,6 +39,18 @@ public:
 	}
 	Perlin noise_;
 	float scale_;
+};
+
+void get_sphere_uv(const Vector3& p, float & u, float & v);
+
+class ImageTexture :public Texture 
+{
+public:
+	ImageTexture() {}
+	ImageTexture(unsigned char *pixels, int a, int b) :data_(pixels),nx_(a),ny_(b){}
+	virtual Vector3 value(float u, float v, const Vector3& p)const;
+	unsigned char *data_;
+	int nx_, ny_;
 };
 #endif // !TEXTUREH
 
