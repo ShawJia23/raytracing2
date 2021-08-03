@@ -54,4 +54,12 @@ public:
 	virtual Vector3 emitted(float u, float v, const Vector3& p) const;
 	Texture *emit_;
 };
+
+class Isotropic :public Material 
+{
+public :
+	Isotropic(Texture *a) :albedo_(a) {}
+	virtual bool scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered) const;
+	Texture *albedo_;
+};
 #endif // !MATERIALH

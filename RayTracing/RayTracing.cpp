@@ -227,21 +227,25 @@ void cornell_box(Hittable ** world, Camera** cam)
 	Material *white = new Lambertian(new ConstantTexture(Vector3(0.73, 0.73, 0.73)));
 	Material *green = new Lambertian(new ConstantTexture(Vector3(0.12, 0.45, 0.15)));
 	Material *light = new DiffuseLight(new ConstantTexture(Vector3(15, 15, 15)));
-	
+	Material *isotropic1 = new Isotropic(new ConstantTexture(Vector3(1.0, 1.0, 1.0)));
+	Material *isotropic2 = new Isotropic(new ConstantTexture(Vector3(0,0,0)));
+
 	list[0] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
 	list[1] = new YZRect(0, 555, 0, 555, 0, red);
-	list[2] = new FlipNormals(new XZRect(213, 343, 227, 332, 554, light));
+	list[2] = new FlipNormals(new XZRect(113, 443, 127, 432, 554, light));
 	list[3] = new FlipNormals(new XZRect(0, 555, 0, 555, 555, white));
 	list[4] = new XZRect(0, 555, 0, 555, 0, white);
 	list[5] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
-	list[6] = new Translate(
+	Hittable* b1 = new Translate(
 		new RotateY(new Box(Vector3(0, 0, 0), Vector3(165, 165, 165), white), -18),
 		Vector3(130, 0, 65)
 	);
-	list[7] = new Translate(
+	Hittable* b2 = new Translate(
 		new RotateY(new Box(Vector3(0, 0, 0), Vector3(165, 330, 165), white), 15),
 		Vector3(265, 0, 295)
 	);
+	list[6] = new ConstantMedium(b1, 0.01,isotropic1);
+	list[7] = new ConstantMedium(b2, 0.01, isotropic2);
 
 	Vector3 lookfrom(278, 278, -800);
 	Vector3 lookat(278, 278, 0);

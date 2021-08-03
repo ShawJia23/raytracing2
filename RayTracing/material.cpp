@@ -104,3 +104,10 @@ Vector3  DiffuseLight::emitted(float u, float v, const Vector3& p) const
 {
 	return emit_->value(u, v, p);
 }
+
+bool Isotropic::scatter(const Ray& r_in, const hit_record& rec, Vector3& attenuation, Ray& scattered) const
+{
+	scattered = Ray(rec.p, random_in_unit_sphere(),0);
+	attenuation = albedo_->value(rec.u, rec.v, rec.p);
+	return true;
+}

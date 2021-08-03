@@ -1,22 +1,33 @@
-﻿  RayTracing.cpp
-  hittable.cpp
+﻿  hittable.cpp
   material.cpp
+  RayTracing.cpp
+  texture.cpp
 e:\demo\raytracing\raytracing\vector.h(54): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据 (编译源文件 material.cpp)
+e:\demo\raytracing\raytracing\vector.h(54): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据 (编译源文件 texture.cpp)
 e:\demo\raytracing\raytracing\vector.h(54): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据 (编译源文件 hittable.cpp)
-e:\demo\raytracing\raytracing\hittable.h(94): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 hittable.cpp)
-e:\demo\raytracing\raytracing\hittable.h(110): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 hittable.cpp)
-e:\demo\raytracing\raytracing\hittable.h(94): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 material.cpp)
-e:\demo\raytracing\raytracing\hittable.h(126): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 hittable.cpp)
-e:\demo\raytracing\raytracing\hittable.h(110): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 material.cpp)
-e:\demo\raytracing\raytracing\hittable.h(126): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 material.cpp)
-e:\demo\raytracing\raytracing\hittable.cpp(51): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
 e:\demo\raytracing\raytracing\vector.h(54): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据 (编译源文件 RayTracing.cpp)
+e:\demo\raytracing\raytracing\hittable.h(95): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 RayTracing.cpp)
+e:\demo\raytracing\raytracing\hittable.h(111): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 RayTracing.cpp)
+e:\demo\raytracing\raytracing\hittable.h(127): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 RayTracing.cpp)
+e:\demo\raytracing\raytracing\hittable.h(95): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 material.cpp)
+e:\demo\raytracing\raytracing\hittable.h(111): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 material.cpp)
+e:\demo\raytracing\raytracing\hittable.h(127): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 material.cpp)
+e:\demo\raytracing\raytracing\texture.cpp(14): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\texture.cpp(15): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\texture.cpp(20): warning C4244: “初始化”: 从“float”转换到“int”，可能丢失数据
+e:\demo\raytracing\raytracing\texture.cpp(21): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+e:\demo\raytracing\raytracing\texture.cpp(26): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\texture.cpp(27): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\texture.cpp(28): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
 e:\demo\raytracing\raytracing\material.cpp(14): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
-e:\demo\raytracing\raytracing\hittable.cpp(328): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
 e:\demo\raytracing\raytracing\material.cpp(77): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-e:\demo\raytracing\raytracing\hittable.h(94): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 RayTracing.cpp)
-e:\demo\raytracing\raytracing\hittable.h(110): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 RayTracing.cpp)
-e:\demo\raytracing\raytracing\hittable.h(126): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 RayTracing.cpp)
+e:\demo\raytracing\raytracing\hittable.h(95): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 hittable.cpp)
+e:\demo\raytracing\raytracing\hittable.h(111): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 hittable.cpp)
+e:\demo\raytracing\raytracing\hittable.h(127): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据 (编译源文件 hittable.cpp)
+e:\demo\raytracing\raytracing\hittable.cpp(51): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\hittable.cpp(328): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\hittable.cpp(384): warning C4244: “参数”: 从“double”转换到“float”，可能丢失数据
+e:\demo\raytracing\raytracing\hittable.cpp(399): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
 e:\demo\raytracing\raytracing\raytracing.cpp(23): warning C4244: “初始化”: 从“double”转换到“float”，可能丢失数据
 e:\demo\raytracing\raytracing\raytracing.cpp(27): warning C4244: “return”: 从“double”转换到“float”，可能丢失数据
 e:\demo\raytracing\raytracing\raytracing.cpp(33): warning C4305: “参数”: 从“double”到“float”截断
@@ -34,4 +45,6 @@ e:\demo\raytracing\raytracing\raytracing.cpp(157): warning C4305: “参数”: 
 e:\demo\raytracing\raytracing\raytracing.cpp(226): warning C4305: “参数”: 从“double”到“float”截断
 e:\demo\raytracing\raytracing\raytracing.cpp(227): warning C4305: “参数”: 从“double”到“float”截断
 e:\demo\raytracing\raytracing\raytracing.cpp(228): warning C4305: “参数”: 从“double”到“float”截断
+e:\demo\raytracing\raytracing\raytracing.cpp(247): warning C4305: “参数”: 从“double”到“float”截断
+e:\demo\raytracing\raytracing\raytracing.cpp(248): warning C4305: “参数”: 从“double”到“float”截断
   RayTracing.vcxproj -> E:\demo\RayTracing\Debug\RayTracing.exe

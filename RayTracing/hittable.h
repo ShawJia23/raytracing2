@@ -5,6 +5,7 @@
 #include"ray.h"
 #include"vector.h"
 #include"AABB.h"
+#include"texture.h"
 
 class Material;
 
@@ -181,5 +182,19 @@ public:
 	float cos_theta_;
 	bool hasbox_;
 	AABB bbox_;
+};
+
+class ConstantMedium :public Hittable 
+{
+public :
+	ConstantMedium(Hittable *b, float d, Material *a) :boundary_(b), density_(d), phase_function_(a) {}
+	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const;
+	virtual bool bounding_box(float t0, float t1, AABB& box) const 
+	{
+		return boundary_->bounding_box(t0, t1, box);
+	}
+	Hittable *boundary_;
+	float density_;
+	Material *phase_function_;
 };
 #endif 
