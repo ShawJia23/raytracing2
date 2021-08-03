@@ -10,6 +10,8 @@ class Material;
 
 struct hit_record
 {
+	float u;
+	float v;
 	float t;//参数t
 	Vector3 p;//相交点
 	Vector3 normal;
@@ -80,4 +82,104 @@ public:
 	AABB box_;
 };
 
+class XYRect :public Hittable 
+{
+public:
+	XYRect() {}
+	XYRect(float x0, float x1, float y0, float y1, float k, Material *mat):
+	x0_(x0),x1_(x1), y0_(y0), y1_(y1),k_(k),mat_(mat) {}
+	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const;
+	virtual bool bounding_box(float t0, float t1, AABB& box) const 
+	{
+		box = AABB(Vector3(x0_, y0_, k_ - 0.0001), Vector3(x1_, y1_, k_ + 0.0001));
+		return true;
+	}
+	Material *mat_;
+	float x0_, x1_, y0_, y1_,k_;
+};
+
+class XZRect :public Hittable
+{
+public:
+	XZRect() {}
+	XZRect(float x0, float x1, float z0, float z1, float k, Material *mat) :
+		x0_(x0), x1_(x1), z0_(z0), z1_(z1), k_(k), mat_(mat) {}
+	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const;
+	virtual bool bounding_box(float t0, float t1, AABB& box) const
+	{
+		box = AABB(Vector3(x0_, k_ - 0.0001,z0_), Vector3(x1_, k_ + 0.0001,z1_));
+		return true;
+	}
+	Material *mat_;
+	float x0_, x1_, z0_, z1_, k_;
+};
+
+class YZRect :public Hittable
+{
+public:
+	YZRect() {}
+	YZRect(float y0, float y1, float z0, float z1, float k, Material *mat) :
+		y0_(y0), y1_(y1), z0_(z0), z1_(z1), k_(k), mat_(mat) {}
+	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const;
+	virtual bool bounding_box(float t0, float t1, AABB& box) const
+	{
+		box = AABB(Vector3( k_ - 0.0001,y0_,z0_), Vector3(k_ + 0.0001,y1_,z1_));
+		return true;
+	}
+	Material *mat_;
+	float y0_, y1_,z0_,z1_ ,k_;
+};
+
+class FlipNormals :public Hittable 
+{
+public:
+	FlipNormals(Hittable * p) :ptr_(p) {}
+	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const;
+	virtual bool bounding_box(float t0, float t1,AABB& box) const 
+	{
+		return ptr_->bounding_box(t0, t1, box);
+	}
+	Hittable *ptr_;
+};
+
+class Box :public Hittable 
+{
+public:
+	Box() {}
+	Box(const Vector3& p0, const Vector3& p1, Material *ptr);
+	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const;
+	virtual bool bounding_box(float t0, float t1, AABB& box) const 
+	{
+		box = AABB(p_min_, p_max_);
+		return true;
+	}
+	Vector3 p_min_, p_max_;
+	Hittable *list_;
+};
+
+class Translate :public Hittable 
+{
+public:
+	Translate(Hittable *p, const Vector3& displacement) :ptr_(p), offset_(displacement) {}
+	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const;
+	virtual bool bounding_box(float t0, float t1, AABB& box) const;
+	Hittable *ptr_;
+	Vector3 offset_;
+};
+
+class RotateY :public Hittable 
+{
+public:
+	RotateY(Hittable *p, float angle);
+	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const;
+	virtual bool bounding_box(float t0, float t1, AABB& box) const 
+	{
+		box = bbox_; return hasbox_;
+	}
+	Hittable *ptr_;
+	float sin_theta_;
+	float cos_theta_;
+	bool hasbox_;
+	AABB bbox_;
+};
 #endif 

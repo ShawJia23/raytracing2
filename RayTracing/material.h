@@ -13,6 +13,7 @@ class Material
 {
 public:
 	virtual bool scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered) const = 0;
+	virtual Vector3 emitted(float u, float v, const Vector3& p) const;
 };
 
 Vector3 reflect(const Vector3&a, const Vector3&n);
@@ -44,6 +45,13 @@ public:
 	Dielectric(float ri) : ref_idx_(ri) {}
 	virtual bool scatter(const Ray& r_in, const hit_record& rec, Vector3& attenuation, Ray&scattered) const;
 	float ref_idx_;
+};
 
+class DiffuseLight : public Material {
+public:
+	DiffuseLight(Texture *a) : emit_(a) {}
+	virtual bool scatter(const Ray& r_in, const hit_record& rec, Vector3& attenuation, Ray& scattered) const;
+	virtual Vector3 emitted(float u, float v, const Vector3& p) const;
+	Texture *emit_;
 };
 #endif // !MATERIALH

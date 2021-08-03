@@ -1,7 +1,6 @@
+#include"vector.h"
 #include"material.h"
 #include"tool.h"
-#include"vector.h"
-
 
 Vector3 reflect(const Vector3& v, const Vector3&n)
 {
@@ -29,6 +28,11 @@ float schlick(float cosine, float ref_idx)
 	return r0 + (1 - r0)*pow((1 - cosine), 5);
 }
 
+
+Vector3 Material::emitted(float u, float v, const Vector3& p) const
+{
+	return Vector3(0, 0, 0);
+}
 bool Lambertian::scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered) const 
 {
 	Vector3 target = rec.p + rec.normal + random_in_unit_sphere();
@@ -90,4 +94,13 @@ bool Dielectric::scatter(const Ray& r_in, const hit_record& rec, Vector3& attenu
 	}
 
 	return true;
+}
+
+bool DiffuseLight::scatter(const Ray& r_in, const hit_record& rec, Vector3& attenuation, Ray& scattered) const
+{
+	return false;
+}
+Vector3  DiffuseLight::emitted(float u, float v, const Vector3& p) const
+{
+	return emit_->value(u, v, p);
 }

@@ -226,4 +226,152 @@ bool BvhNode::bounding_box(float t0, float t1, AABB& b) const {
 	return true;
 }
 
+bool XYRect::hit(const Ray& r, float t_min, float t_max, hit_record& rec) const
+{
+	float t = (k_ - r.origin().z()) / r.direction().z();
+	if (t<t_min || t>t_max) return false;
+	float x = r.origin().x() + t * r.direction().x();
+	float y = r.origin().y() + t * r.direction().y();
+	if (x < x0_ || x > x1_ || y < y0_ || y > y1_) return false;
+	rec.u = (x - x0_) / (x1_ - x0_);
+	rec.v = (y-  y0_) / (y1_ -  y0_);
+	rec.t = t;
+	rec.mat = mat_;
+	rec.p = r.point_at_parameter(t);
+	rec.normal = Vector3(0, 0, 1);
+	return true;
+}
 
+bool XZRect::hit(const Ray& r, float t0, float t1, hit_record& rec) const {
+	float t = (k_ - r.origin().y()) / r.direction().y();
+	if (t < t0 || t > t1)
+		return false;
+	float x = r.origin().x() + t * r.direction().x();
+	float z = r.origin().z() + t * r.direction().z();
+	if (x < x0_ || x > x1_ || z < z0_ || z > z1_)
+		return false;
+	rec.u = (x - x0_) / (x1_ - x0_);
+	rec.v = (z - z0_) / (z1_ - z0_);
+	rec.t = t;
+	rec.mat = mat_;
+	rec.p = r.point_at_parameter(t);
+	rec.normal = Vector3(0, 1, 0);
+	return true;
+}
+
+bool YZRect::hit(const Ray& r, float t0, float t1, hit_record& rec) const {
+	float t = (k_ - r.origin().x()) / r.direction().x();
+	if (t < t0 || t > t1)
+		return false;
+	float y = r.origin().y() + t * r.direction().y();
+	float z = r.origin().z() + t * r.direction().z();
+	if (y < y0_ || y > y1_ || z < z0_ || z > z1_)
+		return false;
+	rec.u = (y - y0_) / (y1_ - y0_);
+	rec.v = (z - z0_) / (z1_ - z0_);
+	rec.t = t;
+	rec.mat = mat_;
+	rec.p = r.point_at_parameter(t);
+	rec.normal = Vector3(1, 0, 0);
+	return true;
+}
+
+bool FlipNormals::hit(const Ray& r, float t_min, float t_max, hit_record& rec) const 
+{
+	if (ptr_->hit(r, t_min, t_max, rec)) {
+		rec.normal = -rec.normal;
+		return true;
+	}
+	else
+		return false;
+}
+
+Box::Box(const Vector3& p0, const Vector3& p1, Material *ptr) {
+	p_min_ = p0;
+	p_max_ = p1;
+	Hittable **list = new Hittable*[6];
+	list[0] = new XYRect(p0.x(), p1.x(), p0.y(), p1.y(), p1.z(), ptr);
+	list[1] = new FlipNormals(new XYRect(p0.x(), p1.x(), p0.y(), p1.y(), p0.z(), ptr));
+	list[2] = new XZRect(p0.x(), p1.x(), p0.z(), p1.z(), p1.y(), ptr);
+	list[3] = new FlipNormals(new XZRect(p0.x(), p1.x(), p0.z(), p1.z(), p0.y(), ptr));
+	list[4] = new YZRect(p0.y(), p1.y(), p0.z(), p1.z(), p1.x(), ptr);
+	list[5] = new FlipNormals(new YZRect(p0.y(), p1.y(), p0.z(), p1.z(), p0.x(), ptr));
+	list_ = new HittableList(list, 6);
+}
+
+bool Box::hit(const Ray& r, float t0, float t1, hit_record& rec) const {
+	return list_->hit(r, t0, t1, rec);
+}
+
+bool Translate::hit(const Ray& r, float t_min, float t_max, hit_record& rec) const 
+{
+	Ray move_r(r.origin() - offset_, r.direction(), r.time());
+	if (ptr_->hit(move_r, t_min, t_max, rec)) 
+	{
+		rec.p += offset_;
+		return true;
+	}
+	else  return false;
+}
+
+bool Translate::bounding_box(float t0, float t1, AABB& box) const 
+{
+	if (ptr_->bounding_box(t0, t1, box)) 
+	{
+		box = AABB(box.min() + offset_, box.max() + offset_);
+		return true;
+	}
+	return false;
+}
+
+RotateY::RotateY(Hittable *p, float angle) : ptr_(p) {
+	float radians = (M_PI / 180.) * angle;
+	sin_theta_ = sin(radians);
+	cos_theta_ = cos(radians);
+	hasbox_ = ptr_->bounding_box(0, 1, bbox_);
+	Vector3 min(FLT_MAX, FLT_MAX, FLT_MAX);
+	Vector3 max(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+	for (int i = 0; i < 2; i++) {
+		for (int j = 0; j < 2; j++) {
+			for (int k = 0; k < 2; k++) {
+				float x = i * bbox_.max().x() + (1 - i)*bbox_.min().x();
+				float y = j * bbox_.max().y() + (1 - j)*bbox_.min().y();
+				float z = k * bbox_.max().z() + (1 - k)*bbox_.min().z();
+				float newx = cos_theta_ * x + sin_theta_ * z;
+				float newz = -sin_theta_ * x + cos_theta_ * z;
+				Vector3 tester(newx, y, newz);
+				for (int c = 0; c < 3; c++)
+				{
+					if (tester[c] > max[c])
+						max[c] = tester[c];
+					if (tester[c] < min[c])
+						min[c] = tester[c];
+				}
+			}
+		}
+	}
+	bbox_ = AABB(min, max);
+}
+
+bool RotateY::hit(const Ray& r, float t_min, float t_max, hit_record& rec) const {
+	Vector3 origin = r.origin();
+	Vector3 direction = r.direction();
+	origin[0] = cos_theta_ * r.origin()[0] - sin_theta_ * r.origin()[2];
+	origin[2] = sin_theta_ * r.origin()[0] + cos_theta_ * r.origin()[2];
+	direction[0] = cos_theta_ * r.direction()[0] - sin_theta_ * r.direction()[2];
+	direction[2] = sin_theta_ * r.direction()[0] + cos_theta_ * r.direction()[2];
+	Ray rotated_r(origin, direction, r.time());
+	if (ptr_->hit(rotated_r, t_min, t_max, rec)) {
+		Vector3 p = rec.p;
+		Vector3 normal = rec.normal;
+		p[0] = cos_theta_ * rec.p[0] + sin_theta_ * rec.p[2];
+		p[2] = -sin_theta_ * rec.p[0] + cos_theta_ * rec.p[2];
+		normal[0] = cos_theta_ * rec.normal[0] + sin_theta_ * rec.normal[2];
+		normal[2] = -sin_theta_ * rec.normal[0] + cos_theta_ * rec.normal[2];
+		rec.p = p;
+		rec.normal = normal;
+		return true;
+	}
+	else
+		return false;
+}

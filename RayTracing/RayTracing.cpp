@@ -10,8 +10,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include"stb_image.h"
 
-int worldx = 200;
-int worldy = 100;
+int worldx = 400;
+int worldy = 300;
 int simple = 10;
 
 Camera *cam;
@@ -34,22 +34,32 @@ Vector3 shading_color(const Ray& r,Hittable *world,int depth)
 	{
 		Ray scattered;
 		Vector3 attenuation;
-		if (depth < 50 && rec.mat->scatter(r, rec, attenuation, scattered)) 
+		Vector3 emitted = rec.mat->emitted(rec.u, rec.v, rec.p);
+		if (depth < 50 && rec.mat->scatter(r, rec, attenuation, scattered))
+		{
+			return emitted+attenuation * shading_color(scattered, world, depth + 1);
+		}
+		else return emitted;
+		//变暗前
+		/*if (depth < 50 && rec.mat->scatter(r, rec, attenuation, scattered)) 
 		{
 			return attenuation* shading_color(scattered,world,depth+1);
 		}
 		else 
 		{
 			return Vector3(0, 0, 0);
-		}
+		}*/
+
 		//Vector3 target = rec.p + rec.normal + random_in_unit_sphere();
 		//return 0.5 * shading_color(Ray(rec.p, target - rec.p), world);
 	}
 	else 
 	{
-		Vector3 unit_direction = unit_vector(r.direction());
+		return Vector3(0, 0, 0); 
+		//变暗前
+		/*Vector3 unit_direction = unit_vector(r.direction());
 		float t = 0.5*(unit_direction.y() + 1.0);
-		return (1.0 - t)*Vector3(1.0, 1.0, 1.0) + t * Vector3(0.5, 0.7, 1.0);
+		return (1.0 - t)*Vector3(1.0, 1.0, 1.0) + t * Vector3(0.5, 0.7, 1.0);*/
 	}
 }
 
@@ -86,7 +96,7 @@ void test_scene(Hittable ** world, Camera** cam)
 	}
 	list[n] = new Sphere(Vector3(-3, 0, 0), 0.5, new Lambertian(blue_daoqi));
 	Vector3 lookfrom(5, 5, 7);
-	Vector3 lookat(0, 0, -1);
+	Vector3 lookat(0, 0, 0.5);
 	float dist_to_focus = (lookfrom - lookat).length();
 	float aperture = 2.0;
 
@@ -181,17 +191,66 @@ void image_scene(Hittable ** world, Camera** cam)
 	Material *mat = new Lambertian(new ImageTexture(texture_data, nx, ny));
 	//stbi_image_free(texture_data);
 	Hittable **list = new Hittable*[1];
-	list[0] = new Sphere(Vector3(0, 1, 0), 2.0,mat);
+	list[0] = new Sphere(Vector3(0, 0, 0), 2,mat);
 	
 	Vector3 lookfrom(13, 2, 3);
 	Vector3 lookat(0, 0, 0);
-	float dist_to_focus = 10;
-	float aperture = 0;
+	float dist_to_focus = (lookfrom - lookat).length();
+	float aperture = 2;
 
 	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(worldx) / float(worldy), aperture, dist_to_focus, 0, 1);
 	*world = new HittableList(list, 1);
 }
 
+void simple_light(Hittable ** world, Camera** cam) 
+{
+	Texture *pertext = new NoiseTexture();
+	Hittable **list = new Hittable*[4];
+	list[0] = new Sphere(Vector3(0, -1000, 0), 1000, new Lambertian(pertext));
+	list[1] = new Sphere(Vector3(0, 2, 0), 2, new Lambertian(pertext));
+	list[2] = new Sphere(Vector3(0, 7, 0), 2,new DiffuseLight(new ConstantTexture(Vector3(4, 4, 4))));
+	list[3] = new XYRect(3, 5, 1, 3, -2,new DiffuseLight(new ConstantTexture(Vector3(4, 4, 4))));
+	
+	Vector3 lookfrom(13, 2, 3);
+	Vector3 lookat(0, 0, 0);
+	float dist_to_focus = (lookfrom - lookat).length();
+	float aperture = 2;
+
+	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(worldx) / float(worldy), aperture, dist_to_focus, 0, 1);
+	*world = new HittableList(list, 4);
+}
+
+void cornell_box(Hittable ** world, Camera** cam)
+{
+	Hittable **list = new Hittable*[8];
+	Material *red = new Lambertian(new ConstantTexture(Vector3(0.65, 0.05, 0.05)));
+	Material *white = new Lambertian(new ConstantTexture(Vector3(0.73, 0.73, 0.73)));
+	Material *green = new Lambertian(new ConstantTexture(Vector3(0.12, 0.45, 0.15)));
+	Material *light = new DiffuseLight(new ConstantTexture(Vector3(15, 15, 15)));
+	
+	list[0] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
+	list[1] = new YZRect(0, 555, 0, 555, 0, red);
+	list[2] = new FlipNormals(new XZRect(213, 343, 227, 332, 554, light));
+	list[3] = new FlipNormals(new XZRect(0, 555, 0, 555, 555, white));
+	list[4] = new XZRect(0, 555, 0, 555, 0, white);
+	list[5] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
+	list[6] = new Translate(
+		new RotateY(new Box(Vector3(0, 0, 0), Vector3(165, 165, 165), white), -18),
+		Vector3(130, 0, 65)
+	);
+	list[7] = new Translate(
+		new RotateY(new Box(Vector3(0, 0, 0), Vector3(165, 330, 165), white), 15),
+		Vector3(265, 0, 295)
+	);
+
+	Vector3 lookfrom(278, 278, -800);
+	Vector3 lookat(278, 278, 0);
+	float dist_to_focus = (lookfrom - lookat).length();
+	float aperture = 2;
+	float vfov = 40.0;
+	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), vfov, float(worldx) / float(worldy), aperture, dist_to_focus, 0, 1);
+	*world = new HittableList(list, 8);
+}
 int main() 
 {
 
@@ -199,7 +258,7 @@ int main()
 	outfile << "P3\n" << worldx << " " << worldy << "\n255\n";
 	
 	
-	image_scene(&world,&cam);
+	cornell_box(&world,&cam);
 	for (int j = worldy - 1; j >= 0; j--) {
 		for (int i = 0; i < worldx; i++) {
 			Vector3 color(0, 0, 0);

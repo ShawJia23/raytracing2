@@ -55,7 +55,7 @@ inline void Vector3::make_unit_vector()
     e[0] *= k; e[1] *= k; e[2] *= k;
 }
 
-inline Vector3 operator+(const Vector3 &v1, const Vector3 &v2) 
+inline Vector3 operator+(const Vector3 &v1, const Vector3 &v2)
 {
     return Vector3(v1.e[0] + v2.e[0], v1.e[1] + v2.e[1], v1.e[2] + v2.e[2]);
 }
