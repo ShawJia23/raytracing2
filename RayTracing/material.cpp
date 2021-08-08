@@ -33,11 +33,24 @@ Vector3 Material::emitted(float u, float v, const Vector3& p) const
 {
 	return Vector3(0, 0, 0);
 }
-bool Lambertian::scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered) const 
+
+float Lambertian::scattering_pdf(const Ray& r_in, const hit_record& rec, const Ray& scattered) const
 {
-	Vector3 target = rec.p + rec.normal + random_in_unit_sphere();
-	scattered = Ray(rec.p, target - rec.p,r_in.time());
-	attenuation = albedo_->value(0,0,rec.p);
+	float cosine = dot(rec.normal, unit_vector(scattered.direction()));
+	if (cosine < 0)
+		return 0;
+	return cosine / M_PI;
+}
+
+bool Lambertian::scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered, float& pdf) const
+{
+	Vector3 direction;
+	do {
+		direction = random_in_unit_sphere();
+	} while (dot(direction, rec.normal) < 0);
+	scattered = Ray(rec.p, unit_vector(direction), r_in.time());
+	attenuation = albedo_->value(rec.u, rec.v, rec.p);
+	pdf = 0.5 / M_PI;
 	return true;
 }
 

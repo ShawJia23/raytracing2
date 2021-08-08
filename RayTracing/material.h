@@ -12,7 +12,14 @@ struct hit_record;
 class Material 
 {
 public:
-	virtual bool scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered) const = 0;
+	virtual bool scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered, float& pdf) const 
+	{
+		return false;
+	}
+	virtual float scattering_pdf(const Ray& r_in, const hit_record& rec,const Ray& scattered) const 
+	{
+		return 0;
+	}
 	virtual Vector3 emitted(float u, float v, const Vector3& p) const;
 };
 
@@ -26,7 +33,8 @@ class Lambertian :public Material
 {
 public:
 	Lambertian(Texture *a) :albedo_(a) {}
-	virtual bool scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered) const;
+	float scattering_pdf(const Ray& r_in, const hit_record& rec, const Ray& scattered) const;
+	virtual bool scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered,float& pdf) const;
 	Texture* albedo_;
 };
 

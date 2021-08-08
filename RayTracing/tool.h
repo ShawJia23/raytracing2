@@ -11,5 +11,6 @@
 inline double random_double();
 Vector3 random_in_unit_sphere();
 Vector3 random_in_unit_disk();
+Vector3 random_on_unit_sphere();
 
 #endif // !TOOLH

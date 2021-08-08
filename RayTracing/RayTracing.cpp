@@ -35,9 +35,11 @@ Vector3 shading_color(const Ray& r,Hittable *world,int depth)
 		Ray scattered;
 		Vector3 attenuation;
 		Vector3 emitted = rec.mat->emitted(rec.u, rec.v, rec.p);
-		if (depth < 50 && rec.mat->scatter(r, rec, attenuation, scattered))
+		float pdf;
+		Vector3 albedo;
+		if (depth < 50 && rec.mat->scatter(r, rec, attenuation, scattered,pdf))
 		{
-			return emitted+attenuation * shading_color(scattered, world, depth + 1);
+			return emitted+attenuation * rec.mat->scattering_pdf(r, rec, scattered) *shading_color(scattered, world, depth + 1)/pdf;
 		}
 		else return emitted;
 		//变暗前
@@ -230,12 +232,12 @@ void cornell_box(Hittable ** world, Camera** cam)
 	Material *isotropic1 = new Isotropic(new ConstantTexture(Vector3(1.0, 1.0, 1.0)));
 	Material *isotropic2 = new Isotropic(new ConstantTexture(Vector3(0,0,0)));
 
-	list[0] = new FlipNormals(new YZRect(0, 555, 0, 555, 555, green));
-	list[1] = new YZRect(0, 555, 0, 555, 0, red);
-	list[2] = new FlipNormals(new XZRect(113, 443, 127, 432, 554, light));
-	list[3] = new FlipNormals(new XZRect(0, 555, 0, 555, 555, white));
-	list[4] = new XZRect(0, 555, 0, 555, 0, white);
-	list[5] = new FlipNormals(new XYRect(0, 555, 0, 555, 555, white));
+	list[0] = new FlipNormals(new YZRect(0, 555, 0, 555, 655, green));
+	list[1] = new YZRect(0, 555, 0, 555, -100, red);
+	list[2] = new FlipNormals(new XZRect(163, 393, 177, 382, 554, light));
+	list[3] = new FlipNormals(new XZRect(-100, 655, 0, 555, 555, white));
+	list[4] = new XZRect(-100, 655, 0, 555, 0, white);
+	list[5] = new FlipNormals(new XYRect(-100, 655, 0, 555, 555, white));
 	Hittable* b1 = new Translate(
 		new RotateY(new Box(Vector3(0, 0, 0), Vector3(165, 165, 165), white), -18),
 		Vector3(130, 0, 65)
@@ -244,8 +246,10 @@ void cornell_box(Hittable ** world, Camera** cam)
 		new RotateY(new Box(Vector3(0, 0, 0), Vector3(165, 330, 165), white), 15),
 		Vector3(265, 0, 295)
 	);
-	list[6] = new ConstantMedium(b1, 0.01,isotropic1);
-	list[7] = new ConstantMedium(b2, 0.01, isotropic2);
+	list[6] = b1;
+	list[7] = b2;
+	/*list[6] = new ConstantMedium(b1, 0.01,isotropic1);
+	list[7] = new ConstantMedium(b2, 0.01, isotropic2);*/
 
 	Vector3 lookfrom(278, 278, -800);
 	Vector3 lookat(278, 278, 0);
