@@ -4,7 +4,7 @@
 #include "vector.h"
 #include "tool.h"
 
-class Perlin {
+class PerlinNoise {
 public:
 	float noise(const Vector3& p) const;
 	float turb(const Vector3& p, int depth = 7)const;
@@ -13,6 +13,5 @@ public:
 	static int *perm_y_;
 	static int *perm_z_;
 };
-
 
 #endif // !PERLINH

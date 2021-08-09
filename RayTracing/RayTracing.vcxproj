@@ -157,6 +157,7 @@
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="hittable.cpp" />
     <ClCompile Include="material.cpp" />
+    <ClCompile Include="pdf.cpp" />
     <ClCompile Include="perlin.cpp" />
     <ClCompile Include="RayTracing.cpp" />
     <ClCompile Include="texture.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="hittable.h" />
     <ClInclude Include="material.h" />
+    <ClInclude Include="pdf.h" />
     <ClInclude Include="perlin.h" />
     <ClInclude Include="ray.h" />
     <ClInclude Include="stb_image.h" />

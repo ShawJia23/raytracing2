@@ -6,6 +6,7 @@
 #include "hittable.h"
 #include"camera.h"
 #include"material.h"
+#include "pdf.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include"stb_image.h"
@@ -35,25 +36,16 @@ Vector3 shading_color(const Ray& r,Hittable *world,int depth)
 		Ray scattered;
 		Vector3 attenuation;
 		Vector3 emitted = rec.mat->emitted(r, rec, rec.u, rec.v, rec.p);
-		float pdf;
-		Vector3 albedo;
-		if (depth < 50 && rec.mat->scatter(r, rec, attenuation, scattered,pdf))
+		float pdf_val;
+		if (depth < 50 && rec.mat->scatter(r, rec, attenuation, scattered,pdf_val))
 		{
-			Vector3 on_light = Vector3(163 + random_double()*(393 - 163),
-				554,
-				167 + random_double()*(382 - 167));
-			Vector3 to_light = on_light - rec.p;
-			float distance_squared = to_light.squared_length();
-			to_light.make_unit_vector();
-			if (dot(to_light, rec.normal) < 0)
-				return emitted;
-			float light_area = (393 -163)*(382 - 167);
-			float light_cosine = fabs(to_light.y());
-			if (light_cosine < 0.000001)
-				return emitted;
-			pdf = distance_squared / (light_cosine * light_area);
-			scattered = Ray(rec.p, to_light, r.time());
-			return emitted+attenuation * rec.mat->scattering_pdf(r, rec, scattered) *shading_color(scattered, world, depth + 1)/pdf;
+			Hittable *light_shape = new XZRect(213, 343, 227, 332, 554, 0);
+			HittablePDF p0(light_shape, rec.p);
+			CosinePDF p1(rec.normal);
+			MixturePDF p(&p0, &p1);
+			scattered = Ray(rec.p, p.generate(), r.time());
+			pdf_val = p.value(scattered.direction());
+			return emitted+attenuation * rec.mat->scattering_pdf(r, rec, scattered) *shading_color(scattered, world, depth + 1)/pdf_val;
 		}
 		else return emitted;
 		//变暗前
@@ -185,20 +177,20 @@ void two_sphere(Hittable ** world, Camera** cam)
 	*world = new BvhNode(list, 2,0,0);
 }
 
-void two_perlin_spheres(Hittable ** world,Camera** cam) {
-	Texture *pertext = new NoiseTexture();
-	Hittable **list = new Hittable*[2];
-	list[0] = new Sphere(Vector3(0, -1000, 0), 1000, new Lambertian(pertext));
-	list[1] = new Sphere(Vector3(0, 2, 0), 2, new Lambertian(pertext));
-
-	Vector3 lookfrom(13, 2, 3);
-	Vector3 lookat(0, 0, 0);
-	float dist_to_focus = 10;
-	float aperture = 0;
-
-	*cam=new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(worldx) / float(worldy), aperture, dist_to_focus, 0, 1);
-	*world = new HittableList(list, 2);
-}
+//void two_perlin_spheres(Hittable ** world,Camera** cam) {
+//	Texture *pertext = new NoiseTexture();
+//	Hittable **list = new Hittable*[2];
+//	list[0] = new Sphere(Vector3(0, -1000, 0), 1000, new Lambertian(pertext));
+//	list[1] = new Sphere(Vector3(0, 2, 0), 2, new Lambertian(pertext));
+//
+//	Vector3 lookfrom(13, 2, 3);
+//	Vector3 lookat(0, 0, 0);
+//	float dist_to_focus = 10;
+//	float aperture = 0;
+//
+//	*cam=new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(worldx) / float(worldy), aperture, dist_to_focus, 0, 1);
+//	*world = new HittableList(list, 2);
+//}
 
 void image_scene(Hittable ** world, Camera** cam)
 {
@@ -218,23 +210,23 @@ void image_scene(Hittable ** world, Camera** cam)
 	*world = new HittableList(list, 1);
 }
 
-void simple_light(Hittable ** world, Camera** cam) 
-{
-	Texture *pertext = new NoiseTexture();
-	Hittable **list = new Hittable*[4];
-	list[0] = new Sphere(Vector3(0, -1000, 0), 1000, new Lambertian(pertext));
-	list[1] = new Sphere(Vector3(0, 2, 0), 2, new Lambertian(pertext));
-	list[2] = new Sphere(Vector3(0, 7, 0), 2,new DiffuseLight(new ConstantTexture(Vector3(4, 4, 4))));
-	list[3] = new XYRect(3, 5, 1, 3, -2,new DiffuseLight(new ConstantTexture(Vector3(4, 4, 4))));
-	
-	Vector3 lookfrom(13, 2, 3);
-	Vector3 lookat(0, 0, 0);
-	float dist_to_focus = (lookfrom - lookat).length();
-	float aperture = 2;
-
-	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(worldx) / float(worldy), aperture, dist_to_focus, 0, 1);
-	*world = new HittableList(list, 4);
-}
+//void simple_light(Hittable ** world, Camera** cam) 
+//{
+//	Texture *pertext = new NoiseTexture();
+//	Hittable **list = new Hittable*[4];
+//	list[0] = new Sphere(Vector3(0, -1000, 0), 1000, new Lambertian(pertext));
+//	list[1] = new Sphere(Vector3(0, 2, 0), 2, new Lambertian(pertext));
+//	list[2] = new Sphere(Vector3(0, 7, 0), 2,new DiffuseLight(new ConstantTexture(Vector3(4, 4, 4))));
+//	list[3] = new XYRect(3, 5, 1, 3, -2,new DiffuseLight(new ConstantTexture(Vector3(4, 4, 4))));
+//	
+//	Vector3 lookfrom(13, 2, 3);
+//	Vector3 lookat(0, 0, 0);
+//	float dist_to_focus = (lookfrom - lookat).length();
+//	float aperture = 2;
+//
+//	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), 20, float(worldx) / float(worldy), aperture, dist_to_focus, 0, 1);
+//	*world = new HittableList(list, 4);
+//}
 
 void cornell_box(Hittable ** world, Camera** cam)
 {

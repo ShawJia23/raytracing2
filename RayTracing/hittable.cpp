@@ -259,6 +259,25 @@ bool XZRect::hit(const Ray& r, float t0, float t1, hit_record& rec) const {
 	return true;
 }
 
+float XZRect::pdf_value(const Vector3& o, const Vector3& v) const 
+{
+	hit_record rec;
+	if (this->hit(Ray(o, v,0), 0.001, FLT_MAX, rec)) {
+		float area = (x1_ - x0_)*(z1_ - z0_);
+		float distance_squared = rec.t * rec.t * v.squared_length();
+		float cosine = fabs(dot(v, rec.normal) / v.length());
+		return  distance_squared / (cosine * area);
+	}
+	else
+		return 0;
+}
+
+Vector3 XZRect::random(const Vector3& o) const {
+	Vector3 random_point = Vector3(x0_ + random_double()*(x1_ - x0_), k_,
+		z0_ + random_double()*(z1_ - z0_));
+	return random_point - o;
+}
+
 bool YZRect::hit(const Ray& r, float t0, float t1, hit_record& rec) const {
 	float t = (k_ - r.origin().x()) / r.direction().x();
 	if (t < t0 || t > t1)

@@ -43,7 +43,7 @@ static int* perlin_generate_perm() {
 	return p;
 }
 
-float Perlin::noise(const Vector3& p) const {
+float PerlinNoise::noise(const Vector3& p) const {
 	float u = p.x() - floor(p.x());
 	float v = p.y() - floor(p.y());
 	float w = p.z() - floor(p.z());
@@ -60,7 +60,7 @@ float Perlin::noise(const Vector3& p) const {
 	return perlin_Interp(c, u, v, w);
 }
 
-float Perlin::turb(const Vector3& p, int depth)const
+float PerlinNoise::turb(const Vector3& p, int depth)const
 {
 	float accum = 0.0f;
 	Vector3 temp = p;
@@ -74,7 +74,7 @@ float Perlin::turb(const Vector3& p, int depth)const
 	return fabs(accum);
 }
 
-Vector3 *Perlin::random_vector3_ = perlin_generate();
-int *Perlin::perm_x_ = perlin_generate_perm();
-int *Perlin::perm_y_ = perlin_generate_perm();
-int *Perlin::perm_z_ = perlin_generate_perm();
+Vector3 *PerlinNoise::random_vector3_ = perlin_generate();
+int *PerlinNoise::perm_x_ = perlin_generate_perm();
+int *PerlinNoise::perm_y_ = perlin_generate_perm();
+int *PerlinNoise::perm_z_ = perlin_generate_perm();

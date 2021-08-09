@@ -2,12 +2,15 @@
 #ifndef HITTABLEH
 #define HITTABLEH
 
+#include"pdf.h"
 #include"ray.h"
 #include"vector.h"
 #include"AABB.h"
 #include"texture.h"
+#include "tool.h"
 
 class Material;
+
 
 struct hit_record
 {
@@ -30,6 +33,8 @@ class Hittable
 public:
 	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const = 0;
 	virtual bool bounding_box(float t0, float t1, AABB& box) const = 0;
+	virtual float  pdf_value(const Vector3& o, const Vector3& v) const { return 0.0; }
+	virtual Vector3 random(const Vector3& o) const { return Vector3(1, 0, 0); }
 };
 
 class HittableList : public Hittable {
@@ -111,6 +116,8 @@ public:
 		box = AABB(Vector3(x0_, k_ - 0.0001,z0_), Vector3(x1_, k_ + 0.0001,z1_));
 		return true;
 	}
+	virtual float  pdf_value(const Vector3& o, const Vector3& v) const;
+	virtual Vector3 random(const Vector3& o) const;
 	Material *mat_;
 	float x0_, x1_, z0_, z1_, k_;
 };

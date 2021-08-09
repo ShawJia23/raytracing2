@@ -47,15 +47,3 @@ Vector3 random_cosine_direction()
 	float y = sin(phi)*sqrt(r2);
 	return Vector3(x, y, z);
 }
-
-void ONB::build_from_w(const Vector3& n) 
-{
-	axis_[2] = unit_vector(n);
-	Vector3 a;
-	if (fabs(axis_[2].x()) > 0.9)
-		a = Vector3(0, 1, 0);
-	else
-		a = Vector3(1, 0, 0);
-	axis_[1] = unit_vector(cross(axis_[2], a));
-	axis_[0] = cross(axis_[2], axis_[1]);
-}

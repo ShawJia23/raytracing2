@@ -2,9 +2,9 @@
 #ifndef TEXTUREH
 #define TEXTUREH
 #include "vector.h"
-#include "perlin.h"
 #include <math.h>
 #include"tool.h"
+#include "perlin.h"
 
 class Texture 
 {
@@ -31,15 +31,13 @@ public:
 	Texture* even_;
 };
 
-class NoiseTexture : public Texture {
-public:
-	NoiseTexture() {}
-	virtual Vector3 value(float u, float v, const Vector3& p) const {
-		return Vector3(1, 1, 1) * 0.5 * (1 + sin(scale_ * p.z() + 10 * noise_.turb(p)));
-	}
-	Perlin noise_;
-	float scale_;
-};
+//class NoiseTexture : public Texture {
+//public:
+//	NoiseTexture() {}
+//	virtual Vector3 value(float u, float v, const Vector3& p) const;
+//	PerlinNoise noise_;
+//	float scale_;
+//};
 
 void get_sphere_uv(const Vector3& p, float & u, float & v);
 

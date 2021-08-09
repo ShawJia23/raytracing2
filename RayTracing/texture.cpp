@@ -28,3 +28,8 @@ Vector3 ImageTexture::value(float u, float v, const Vector3& p) const
 	float b= int(data_[3 * i + 3 * nx_*j+2]) / 255.0;
 	return Vector3(r, g, b);
 }
+
+//Vector3 NoiseTexture::value(float u, float v, const Vector3& p) const
+//{
+//	return Vector3(1, 1, 1) * 0.5 * (1 + sin(scale_ * p.z() + 10 * noise_.turb(p)));
+//}
