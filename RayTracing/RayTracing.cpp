@@ -34,11 +34,25 @@ Vector3 shading_color(const Ray& r,Hittable *world,int depth)
 	{
 		Ray scattered;
 		Vector3 attenuation;
-		Vector3 emitted = rec.mat->emitted(rec.u, rec.v, rec.p);
+		Vector3 emitted = rec.mat->emitted(r, rec, rec.u, rec.v, rec.p);
 		float pdf;
 		Vector3 albedo;
 		if (depth < 50 && rec.mat->scatter(r, rec, attenuation, scattered,pdf))
 		{
+			Vector3 on_light = Vector3(163 + random_double()*(393 - 163),
+				554,
+				167 + random_double()*(382 - 167));
+			Vector3 to_light = on_light - rec.p;
+			float distance_squared = to_light.squared_length();
+			to_light.make_unit_vector();
+			if (dot(to_light, rec.normal) < 0)
+				return emitted;
+			float light_area = (393 -163)*(382 - 167);
+			float light_cosine = fabs(to_light.y());
+			if (light_cosine < 0.000001)
+				return emitted;
+			pdf = distance_squared / (light_cosine * light_area);
+			scattered = Ray(rec.p, to_light, r.time());
 			return emitted+attenuation * rec.mat->scattering_pdf(r, rec, scattered) *shading_color(scattered, world, depth + 1)/pdf;
 		}
 		else return emitted;
@@ -234,7 +248,7 @@ void cornell_box(Hittable ** world, Camera** cam)
 
 	list[0] = new FlipNormals(new YZRect(0, 555, 0, 555, 655, green));
 	list[1] = new YZRect(0, 555, 0, 555, -100, red);
-	list[2] = new FlipNormals(new XZRect(163, 393, 177, 382, 554, light));
+	list[2] = new FlipNormals(new XZRect(163, 393, 167, 382, 554, light));
 	list[3] = new FlipNormals(new XZRect(-100, 655, 0, 555, 555, white));
 	list[4] = new XZRect(-100, 655, 0, 555, 0, white);
 	list[5] = new FlipNormals(new XYRect(-100, 655, 0, 555, 555, white));

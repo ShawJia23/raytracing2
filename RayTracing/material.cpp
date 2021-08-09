@@ -29,7 +29,7 @@ float schlick(float cosine, float ref_idx)
 }
 
 
-Vector3 Material::emitted(float u, float v, const Vector3& p) const
+Vector3 Material::emitted(const Ray& r_in, const hit_record& rec, float u, float v, const Vector3& p) const
 {
 	return Vector3(0, 0, 0);
 }
@@ -44,13 +44,12 @@ float Lambertian::scattering_pdf(const Ray& r_in, const hit_record& rec, const R
 
 bool Lambertian::scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered, float& pdf) const
 {
-	Vector3 direction;
-	do {
-		direction = random_in_unit_sphere();
-	} while (dot(direction, rec.normal) < 0);
+	ONB uvw;
+	uvw.build_from_w(rec.normal);
+	Vector3 direction = uvw.local(random_cosine_direction());
 	scattered = Ray(rec.p, unit_vector(direction), r_in.time());
 	attenuation = albedo_->value(rec.u, rec.v, rec.p);
-	pdf = 0.5 / M_PI;
+	pdf = dot(uvw.axis_[2], scattered.direction()) / M_PI;
 	return true;
 }
 
@@ -113,9 +112,13 @@ bool DiffuseLight::scatter(const Ray& r_in, const hit_record& rec, Vector3& atte
 {
 	return false;
 }
-Vector3  DiffuseLight::emitted(float u, float v, const Vector3& p) const
+
+Vector3  DiffuseLight::emitted(const Ray& r_in, const hit_record& rec, float u, float v, const Vector3& p) const
 {
-	return emit_->value(u, v, p);
+	if (dot(rec.normal, r_in.direction()) < 0.0)
+		return emit_->value(u, v, p);
+	else
+		return Vector3(0, 0, 0);
 }
 
 bool Isotropic::scatter(const Ray& r_in, const hit_record& rec, Vector3& attenuation, Ray& scattered) const

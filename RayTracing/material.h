@@ -20,7 +20,7 @@ public:
 	{
 		return 0;
 	}
-	virtual Vector3 emitted(float u, float v, const Vector3& p) const;
+	virtual Vector3 emitted(const Ray& r_in, const hit_record& rec, float u, float v, const Vector3& p) const;
 };
 
 Vector3 reflect(const Vector3&a, const Vector3&n);
@@ -59,7 +59,7 @@ class DiffuseLight : public Material {
 public:
 	DiffuseLight(Texture *a) : emit_(a) {}
 	virtual bool scatter(const Ray& r_in, const hit_record& rec, Vector3& attenuation, Ray& scattered) const;
-	virtual Vector3 emitted(float u, float v, const Vector3& p) const;
+	virtual Vector3 emitted(const Ray& r_in, const hit_record& rec, float u, float v, const Vector3& p) const;
 	Texture *emit_;
 };
 
