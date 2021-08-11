@@ -28,7 +28,15 @@ public:
 class CosinePDF :public PDF
 {
 public:
+	CosinePDF() 
+	{
+		uvw_.axis_[2] = { 0,0,0 };
+		uvw_.axis_[1] = { 0,0,0 };
+		uvw_.axis_[0] = { 0,0,0 };
+	}
 	CosinePDF(const Vector3& w) { uvw_.build_from_w(w); }
+	CosinePDF(const CosinePDF& a);
+	void reuvw(const Vector3& w) { uvw_.build_from_w(w); }
 	virtual float value(const Vector3& direction) const;
 	virtual Vector3 generate() const;
 	ONB uvw_;

@@ -11,12 +11,21 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include"stb_image.h"
 
-int worldx = 400;
-int worldy = 300;
-int simple = 10;
+int worldx = 1960;
+int worldy = 1080;
+int simple = 500;
 
-Camera *cam;
-Hittable *world;
+Camera *cam_main;
+Hittable *world_main;
+Hittable *light_main;
+
+inline Vector3 de_nan(const Vector3& c) {
+	Vector3 temp = c;
+	if (!(temp[0] == temp[0])) temp[0] = 0;
+	if (!(temp[1] == temp[1])) temp[1] = 0;
+	if (!(temp[2] == temp[2])) temp[2] = 0;
+	return temp;
+}
 
 float hit_sphere(const Vector3& center, float radius, const Ray& r) {
 	Vector3 oc = r.origin() - center;
@@ -28,24 +37,24 @@ float hit_sphere(const Vector3& center, float radius, const Ray& r) {
 	else return (-b - sqrt(discriminant)) / (2.0*a);
 }
 
-Vector3 shading_color(const Ray& r,Hittable *world,int depth) 
+Vector3 shading_color(const Ray& r,Hittable *world,Hittable* light_shape,int depth) 
 {
 	hit_record rec;
 	if (world->hit(r, 0.001, FLT_MAX, rec)) 
 	{
-		Ray scattered;
-		Vector3 attenuation;
+		scatter_record srec;
 		Vector3 emitted = rec.mat->emitted(r, rec, rec.u, rec.v, rec.p);
-		float pdf_val;
-		if (depth < 50 && rec.mat->scatter(r, rec, attenuation, scattered,pdf_val))
+		if (depth < 20 && rec.mat->scatter(r, rec, srec))
 		{
-			Hittable *light_shape = new XZRect(213, 343, 227, 332, 554, 0);
-			HittablePDF p0(light_shape, rec.p);
-			CosinePDF p1(rec.normal);
-			MixturePDF p(&p0, &p1);
-			scattered = Ray(rec.p, p.generate(), r.time());
-			pdf_val = p.value(scattered.direction());
-			return emitted+attenuation * rec.mat->scattering_pdf(r, rec, scattered) *shading_color(scattered, world, depth + 1)/pdf_val;
+			if (srec.is_specular) 
+			{
+				return srec.attenuation *shading_color(srec.specular_ray, world, light_shape, depth + 1);
+			}
+			HittablePDF plight(light_shape, rec.p);
+			MixturePDF p(&plight, srec.pdf_ptr);
+			Ray scattered = Ray(rec.p, p.generate(), r.time());
+			float pdf_val = p.value(scattered.direction());
+			return emitted+srec.attenuation * rec.mat->scattering_pdf(r, rec, scattered) *shading_color(scattered, world, light_shape,depth + 1)/pdf_val;
 		}
 		else return emitted;
 		//变暗前
@@ -228,7 +237,7 @@ void image_scene(Hittable ** world, Camera** cam)
 //	*world = new HittableList(list, 4);
 //}
 
-void cornell_box(Hittable ** world, Camera** cam)
+void cornell_box(Hittable ** world, Camera** cam,Hittable** light_shape)
 {
 	Hittable **list = new Hittable*[8];
 	Material *red = new Lambertian(new ConstantTexture(Vector3(0.65, 0.05, 0.05)));
@@ -237,6 +246,8 @@ void cornell_box(Hittable ** world, Camera** cam)
 	Material *light = new DiffuseLight(new ConstantTexture(Vector3(15, 15, 15)));
 	Material *isotropic1 = new Isotropic(new ConstantTexture(Vector3(1.0, 1.0, 1.0)));
 	Material *isotropic2 = new Isotropic(new ConstantTexture(Vector3(0,0,0)));
+	Material *aluminum = new Metal(Vector3(0.8, 0.85, 0.88), 0.0);
+	Material *glass = new Dielectric(1.5);
 
 	list[0] = new FlipNormals(new YZRect(0, 555, 0, 555, 655, green));
 	list[1] = new YZRect(0, 555, 0, 555, -100, red);
@@ -249,11 +260,11 @@ void cornell_box(Hittable ** world, Camera** cam)
 		Vector3(130, 0, 65)
 	);
 	Hittable* b2 = new Translate(
-		new RotateY(new Box(Vector3(0, 0, 0), Vector3(165, 330, 165), white), 15),
-		Vector3(265, 0, 295)
-	);
-	list[6] = b1;
-	list[7] = b2;
+		new RotateY(new Box(Vector3(0, 0, 0), Vector3(165, 330, 165), aluminum), 30),
+		Vector3(265, 0, 295));
+	Hittable *s= new Sphere(Vector3(190, 90, 190), 90, glass);
+	list[6] = b2;
+	list[7] = s;
 	/*list[6] = new ConstantMedium(b1, 0.01,isotropic1);
 	list[7] = new ConstantMedium(b2, 0.01, isotropic2);*/
 
@@ -264,6 +275,13 @@ void cornell_box(Hittable ** world, Camera** cam)
 	float vfov = 40.0;
 	*cam = new Camera(lookfrom, lookat, Vector3(0, 1, 0), vfov, float(worldx) / float(worldy), aperture, dist_to_focus, 0, 1);
 	*world = new HittableList(list, 8);
+
+	Hittable *glass_sphere = new Sphere(Vector3(190, 90, 190), 90, 0);
+	Hittable *l= new XZRect(213, 343, 227, 332, 554, 0);
+	Hittable **list_sample = new Hittable*[2];
+	list_sample[0] = l;
+	list_sample[1] = glass_sphere;
+	*light_shape = new HittableList(list_sample, 2);
 }
 int main() 
 {
@@ -271,16 +289,15 @@ int main()
 	std::ofstream outfile("MyTest.txt", std::ios::out);
 	outfile << "P3\n" << worldx << " " << worldy << "\n255\n";
 	
-	
-	cornell_box(&world,&cam);
+	cornell_box(&world_main,&cam_main,&light_main);
 	for (int j = worldy - 1; j >= 0; j--) {
 		for (int i = 0; i < worldx; i++) {
 			Vector3 color(0, 0, 0);
 			for (int s = 0; s < simple; s++) {
 				float u = float(i + random_double()) / float(worldx);
 				float v = float(j + random_double()) / float(worldy);
-				Ray r = cam->get_ray(u, v);
-				color += shading_color(r, world,0);
+				Ray r = cam_main->get_ray(u, v);
+				color += de_nan(shading_color(r, world_main,light_main,0));
 			}
 			color /= float(simple);
 			color = Vector3(sqrt(color[0]), sqrt(color[1]), sqrt(color[2]));

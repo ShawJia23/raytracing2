@@ -42,14 +42,12 @@ float Lambertian::scattering_pdf(const Ray& r_in, const hit_record& rec, const R
 	return cosine / M_PI;
 }
 
-bool Lambertian::scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered, float& pdf) const
+bool Lambertian::scatter(const Ray& r_in, const hit_record &rec, scatter_record& srec) const
 {
-	ONB uvw;
-	uvw.build_from_w(rec.normal);
-	Vector3 direction = uvw.local(random_cosine_direction());
-	scattered = Ray(rec.p, unit_vector(direction), r_in.time());
-	attenuation = albedo_->value(rec.u, rec.v, rec.p);
-	pdf = dot(uvw.axis_[2], scattered.direction()) / M_PI;
+	srec.is_specular = false;
+	srec.attenuation = albedo_->value(rec.u, rec.v, rec.p);
+	temp_->reuvw(rec.normal);
+	srec.pdf_ptr = temp_;
 	return true;
 }
 
@@ -59,22 +57,28 @@ Metal::Metal(const Vector3& a, float f) :albedo_(a)
 	else fuzz_ = 1;
 }
 
-bool Metal::scatter(const Ray& r_in, const hit_record& rec, Vector3& attenuation, Ray& scattered) const 
+bool Metal::scatter(const Ray& r_in, const hit_record& rec, scatter_record& srec) const
 {
 	Vector3 reflected = reflect(unit_vector(r_in.direction()), rec.normal);
-	scattered = Ray(rec.p, reflected+fuzz_*random_in_unit_sphere(),0);
-	attenuation = albedo_;
-	return (dot(scattered.direction(), rec.normal) > 0);
+	srec.specular_ray = Ray(rec.p, reflected + fuzz_ * random_in_unit_sphere(),0);
+	srec.attenuation = albedo_;
+	srec.is_specular = true;
+	srec.pdf_ptr = 0;
+	return true;
 }
 
-bool Dielectric::scatter(const Ray& r_in, const hit_record& rec, Vector3& attenuation, Ray&scattered) const 
+bool Dielectric::scatter(const Ray& r_in, const hit_record& rec, scatter_record& srec) const
 {
+
+	srec.is_specular = true;
+	srec.pdf_ptr = 0;
+	srec.attenuation = Vector3(1.0, 1.0, 1.0);
+
 	Vector3 outward_normal;
 	Vector3 reflected = reflect(r_in.direction(), rec.normal);
-	float ni_over_nt = ref_idx_;
-	attenuation = Vector3(1.0, 1.0, 1.0);
 	Vector3 refracted;
 
+	float ni_over_nt = ref_idx_;
 	float  reflect_prob;
 	float cosine;
 	if (dot(r_in.direction(), rec.normal) > 0) 
@@ -99,10 +103,10 @@ bool Dielectric::scatter(const Ray& r_in, const hit_record& rec, Vector3& attenu
 	}
 
 	if (random_double() < reflect_prob) {
-		scattered = Ray(rec.p, reflected,0);
+		srec.specular_ray = Ray(rec.p, reflected,0);
 	}
 	else {
-		scattered = Ray(rec.p, refracted,0);
+		srec.specular_ray = Ray(rec.p, refracted,0);
 	}
 
 	return true;

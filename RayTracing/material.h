@@ -9,10 +9,18 @@
 
 struct hit_record;
 
+struct scatter_record 
+{
+	Ray specular_ray;
+	bool is_specular;
+	Vector3 attenuation;
+	PDF *pdf_ptr;
+};
+
 class Material 
 {
 public:
-	virtual bool scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered, float& pdf) const 
+	virtual bool scatter(const Ray& r_in, const hit_record &rec, scatter_record& srec) const 
 	{
 		return false;
 	}
@@ -32,17 +40,18 @@ float schlick(float cosine, float ref_idx);
 class Lambertian :public Material 
 {
 public:
-	Lambertian(Texture *a) :albedo_(a) {}
+	Lambertian(Texture *a) :albedo_(a) { temp_ = new CosinePDF(); };
 	float scattering_pdf(const Ray& r_in, const hit_record& rec, const Ray& scattered) const;
-	virtual bool scatter(const Ray& r_in, const hit_record &rec, Vector3& attenuation, Ray& scattered,float& pdf) const;
+	virtual bool scatter(const Ray& r_in, const hit_record &rec, scatter_record& srec) const;
 	Texture* albedo_;
+	CosinePDF *temp_;
 };
 
 class Metal : public Material 
 {
 public:
 	Metal(const Vector3& a,float f);
-	virtual bool scatter(const Ray& r_in, const hit_record& rec, Vector3& attenuation, Ray& scattered) const;
+	virtual bool scatter(const Ray& r_in, const hit_record& rec, scatter_record& srec) const;
 	Vector3 albedo_;
 	float fuzz_;
 };
@@ -51,7 +60,7 @@ class Dielectric :public Material
 {
 public:
 	Dielectric(float ri) : ref_idx_(ri) {}
-	virtual bool scatter(const Ray& r_in, const hit_record& rec, Vector3& attenuation, Ray&scattered) const;
+	virtual bool scatter(const Ray& r_in, const hit_record& rec, scatter_record& srec) const;
 	float ref_idx_;
 };
 

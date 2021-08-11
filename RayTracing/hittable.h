@@ -43,6 +43,8 @@ public:
 	HittableList(Hittable **l, int n);
 	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec) const;
 	virtual bool bounding_box(float t0, float t1, AABB& box) const;
+	float pdf_value(const Vector3& o, const Vector3& v) const;
+	Vector3 random(const Vector3& o) const;
 	Hittable **list_;
 	int list_size_;
 };
@@ -55,6 +57,8 @@ public:
 
 	virtual bool hit(const Ray& r, float t_min, float t_max, hit_record& rec)const;
 	virtual bool bounding_box(float t0, float t1, AABB& box) const;
+	float pdf_value(const Vector3& o, const Vector3& v) const;
+	Vector3 random(const Vector3& o) const;
 	Vector3 center_;
 	float radius_;
 	Material *mat_ptr_;

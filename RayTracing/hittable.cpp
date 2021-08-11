@@ -2,6 +2,16 @@
 #include"tool.h"
 #include"vector.h"
 
+inline Vector3 random_to_sphere(float radius, float distance_squared) {
+	float r1 = random_double();
+	float r2 = random_double();
+	float z = 1 + r2 * (sqrt(1 - radius * radius / distance_squared) - 1);
+	float phi = 2 * M_PI*r1;
+	float x = cos(phi)*sqrt(1 - z * z);
+	float y = sin(phi)*sqrt(1 - z * z);
+	return Vector3(x, y, z);
+}
+
 bool Sphere::hit(const Ray& r, float t_min, float t_max, hit_record& rec) const
 {
 	Vector3 oc = r.origin() - center_;
@@ -36,6 +46,27 @@ bool Sphere::bounding_box(float t0, float t1, AABB& box) const
 	box = AABB(center_ - Vector3(radius_, radius_, radius_), center_ + Vector3(radius_, radius_, radius_));
 	return true;
 }
+
+float Sphere::pdf_value(const Vector3& o, const Vector3& v) const {
+	hit_record rec;
+	if (this->hit(Ray(o, v,0), 0.001, FLT_MAX, rec)) {
+		float cos_theta_max = sqrt(1 - radius_ * radius_ / (center_ - o).squared_length());
+		float solid_angle = 2 * M_PI*(1 - cos_theta_max);
+		return  1 / solid_angle;
+	}
+	else
+		return 0;
+}
+
+Vector3 Sphere::random(const Vector3& o) const 
+{
+	Vector3 direction = center_ - o;
+	float distance_squared = direction.squared_length();
+	ONB uvw;
+	uvw.build_from_w(direction);
+	return uvw.local(random_to_sphere(radius_, distance_squared));
+}
+
 
 HittableList::HittableList(Hittable **l, int n)
 {
@@ -73,6 +104,19 @@ bool HittableList::bounding_box(float t0, float t1, AABB& box) const {
 			return false;
 	}
 	return true;
+}
+
+float HittableList::pdf_value(const Vector3& o, const Vector3& v) const {
+	float weight = 1.0 / list_size_;
+	float sum = 0;
+	for (int i = 0; i < list_size_; i++)
+		sum += weight * list_[i]->pdf_value(o, v);
+	return sum;
+}
+
+Vector3 HittableList::random(const Vector3& o) const {
+	int index = int(random_double() * list_size_);
+	return list_[index]->random(o);
 }
 
 Vector3 MoveSphere::center(float time) const 

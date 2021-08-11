@@ -12,6 +12,13 @@ void ONB::build_from_w(const Vector3& n)
 	axis_[0] = cross(axis_[2], axis_[1]);
 }
 
+CosinePDF::CosinePDF(const CosinePDF& a) 
+{
+	this->uvw_.axis_[0] = a.uvw_.axis_[0]; 
+	this->uvw_.axis_[1] = a.uvw_.axis_[1];
+	this->uvw_.axis_[2] = a.uvw_.axis_[2];
+}
+
 float CosinePDF::value(const Vector3& direction) const
 {
 	float cosine = dot(unit_vector(direction), uvw_.axis_[2]);
